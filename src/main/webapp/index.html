@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LEGO Robot Dashboard</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+}
+
+header {
+  background: #1e293b;
+  padding: 15px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+button {
+  padding: 10px 14px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #334155;
+  color: white;
+}
+
+button:hover {
+  background: #475569;
+}
+
+input[type=range] {
+  width: 100%;
+}
+
+.status {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+#direction {
+  font-size: 50px;
+  text-align: center;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>LEGO Robot Dashboard</header>
+
+<div class="container">
+
+  <!-- CONTROL -->
+  <div class="card">
+    <h2>Controls</h2>
+
+    <h3>Movement</h3>
+    <button onclick="turnLeft()">⬅ Left</button>
+    <button onclick="turnRight()">Right ➡</button>
+
+    <h3>Speed</h3>
+    <button onclick="goSlower()">- Slower</button>
+    <button onclick="goFaster()">Faster +</button>
+
+    <input type="range" min="0" max="100" value="0"
+      oninput="lego.speed = parseInt(this.value); sendData();">
+
+    <h3>Power</h3>
+    <button onclick="startlego()">START</button>
+    <button onclick="stoplego()">STOP</button>
+  </div>
+
+  <!-- STATUS -->
+  <div class="card">
+    <h2>Status</h2>
+
+    <div class="status" id="legoStatus">
+      Speed: 0<br>
+      Turn: 0<br>
+      Run: 0
+    </div>
+
+    <div id="direction">⬆</div>
+
+    <h3>Server Response</h3>
+    <div id="settings">Waiting...</div>
+
+    <h3>Raw JSON</h3>
+    <div id="setvalues">...</div>
+  </div>
+
+</div>
+
+<script>
+
+// Robot state
+var lego = {
+  id: 1,
+  run: 1,
+  speed: 0,
+  turn: 0,
+  aika: 0
+};
+
+// Send data to backend
+function sendData() {
+  let json = JSON.stringify(lego);
+
+  document.getElementById("setvalues").innerHTML = json;
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      var settings = JSON.parse(this.responseText);
+
+      document.getElementById("settings").innerHTML =
+        "ID=" + settings.id +
+        " Run=" + settings.run +
+        " Speed=" + settings.speed +
+        " Turn=" + settings.turn;
+
+      updateUI();
+    }
+  };
+
+  xhttp.open("POST", "/rest/lego/setvalues", true);
+  xhttp.setRequestHeader("Content-type", "application/json");
+  xhttp.send(json);
+}
+
+// Update UI
+function updateUI() {
+  document.getElementById("legoStatus").innerHTML =
+    "Speed: " + lego.speed + "<br>" +
+    "Turn: " + lego.turn + "<br>" +
+    "Run: " + lego.run;
+
+  let dir = document.getElementById("direction");
+
+  if (lego.turn > 0) dir.innerHTML = "➡";
+  else if (lego.turn < 0) dir.innerHTML = "⬅";
+  else dir.innerHTML = "⬆";
+}
+
+// Buttons
+function turnLeft() {
+  lego.turn -= 10;
+  sendData();
+}
+
+function turnRight() {
+  lego.turn += 10;
+  sendData();
+}
+
+function goFaster() {
+  lego.speed += 10;
+  sendData();
+}
+
+function goSlower() {
+  lego.speed -= 10;
+  sendData();
+}
+
+function startlego() {
+  lego.run = 1;
+  sendData();
+}
+
+function stoplego() {
+  lego.run = 0;
+  sendData();
+}
+
+// KEYBOARD WASD CONTROLS
+document.addEventListener("keydown", function(event) {
+
+  // prevent accidental spam if typing later
+  if (event.target.tagName === "INPUT") return;
+
+  switch (event.key.toLowerCase()) {
+
+    case "w":
+      lego.speed += 10;
+      sendData();
+      break;
+
+    case "s":
+      lego.speed -= 10;
+      sendData();
+      break;
+
+    case "a":
+      lego.turn -= 10;
+      sendData();
+      break;
+
+    case "d":
+      lego.turn += 10;
+      sendData();
+      break;
+
+    case " ":
+      lego.run = 0;
+      sendData();
+      break;
+
+    case "enter":
+      lego.run = 1;
+      sendData();
+      break;
+  }
+});
+
+</script>
+
+</body>
+</html>
