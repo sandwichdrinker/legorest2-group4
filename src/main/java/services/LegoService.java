@@ -72,13 +72,13 @@ public class LegoService {
 
         lego.setTurn(turn);
 
-        EntityManager em=emf.createEntityManager();
+        // EntityManager em=emf.createEntityManager();
 
-        em.getTransaction().begin();
+        // em.getTransaction().begin();
 
-        em.persist(lego);
+        // em.persist(lego);
 
-        em.getTransaction().commit();       
+        // em.getTransaction().commit();       
 
         return lego;
 

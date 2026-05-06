@@ -16,9 +16,10 @@
 		    <property name="jakarta.persistence.jdbc.user" value="lego" />
 		    <property name="jakarta.persistence.jdbc.password" value="lego" />
 
-<!--
+
  		    <property name="eclipselink.ddl-generation" value="create-tables" />
- -->
+			<property name="eclipselink.ddl-generation.output-mode" value="database" />
+
 		</properties>
 	</persistence-unit>
 </persistence>

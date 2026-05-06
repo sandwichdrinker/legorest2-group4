@@ -112,8 +112,6 @@ input[type=range] {
 </div>
 
 <script>
-
-// Robot state
 var lego = {
   id: 1,
   run: 1,
@@ -122,14 +120,17 @@ var lego = {
   aika: 0
 };
 
-// Send data to backend
 function sendData() {
-  let json = JSON.stringify(lego);
-
-  document.getElementById("setvalues").innerHTML = json;
+  var url = "/rest/lego/setvalues/" 
+            + lego.run + "/" 
+            + lego.speed + "/" 
+            + lego.turn;
 
   var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function () {
+
+  document.getElementById("setvalues").innerHTML = url;
+
+  xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       var settings = JSON.parse(this.responseText);
 
@@ -138,15 +139,13 @@ function sendData() {
         " Run=" + settings.run +
         " Speed=" + settings.speed +
         " Turn=" + settings.turn;
-
-      updateUI();
     }
   };
 
-  xhttp.open("POST", "/rest/lego/setvalues", true);
-  xhttp.setRequestHeader("Content-type", "application/json");
-  xhttp.send(json);
+  xhttp.open("GET", url, true);
+  xhttp.send();
 }
+
 
 // Update UI
 function updateUI() {
