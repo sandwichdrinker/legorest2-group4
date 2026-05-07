@@ -117,14 +117,20 @@ var lego = {
   run: 1,
   speed: 0,
   turn: 0,
-  aika: 0
+  aika: 0,
+  vari:0,
+  syvyys:0,
+  distanceForward:0
 };
 
 function sendData() {
-  var url = "/rest/lego/setvalues/" 
+  let url = "/rest/lego/setvalues/" 
             + lego.run + "/" 
             + lego.speed + "/" 
-            + lego.turn;
+            + lego.turn +"/"
+             + lego.vari +"/"
+            + lego.syvyys +"/"
+            + lego.distanceForward;
 
   var xhttp = new XMLHttpRequest();
 
@@ -139,8 +145,42 @@ function sendData() {
         " Run=" + settings.run +
         " Speed=" + settings.speed +
         " Turn=" + settings.turn;
+        " Vari=" + settings.vari +
+        " Syvyys=" + settings.syvyys +s
+        " Etaisyys=" + settings.distanceForward;
+        updateUI();
     }
   };
+
+  setInterval(function() {
+    fetch('/rest/lego/getvalues')
+        .then(response => response.text())
+        .then(data => {
+            let parts = data.split('#');
+            lego.run = parseInt(parts[1]);
+            lego.speed = parseInt(parts[2]);
+            lego.turn = parseInt(parts[3]);
+            lego.vari = parseFloat(parts[4]);
+            lego.syvyys = parseFloat(parts[5]);
+            lego.distanceForward = parseFloat(parts[6]);
+            
+            updateUI(); 
+        });
+}, 1000);
+
+  if (this.readyState == 4 && this.status == 200){
+    var settings = JSON.parse(this.responseText);
+    lego.id=settings.id;
+    lego.run = settings.run;
+    lego.speed = settings.speed;
+    lego.turn = settings.turn;
+    lego.vari = settings.vari;
+    lego.syvyys = settings.syvyys;
+    lego.distanceForward = settings.distanceForward;
+
+    document.getElementById("settings").innerHTML=this.responseText;
+    updateUI();
+  }
 
   xhttp.open("GET", url, true);
   xhttp.send();
@@ -152,7 +192,10 @@ function updateUI() {
   document.getElementById("legoStatus").innerHTML =
     "Speed: " + lego.speed + "<br>" +
     "Turn: " + lego.turn + "<br>" +
-    "Run: " + lego.run;
+    "Run: " + lego.run + "<br>" +
+    "Vari:" + lego.vari + "<br>" +
+    "Syvyys:" + lego.syvyys + "<br>" +
+    "Etaisyys:" + lego.distanceForward;
 
   let dir = document.getElementById("direction");
 
@@ -160,7 +203,6 @@ function updateUI() {
   else if (lego.turn < 0) dir.innerHTML = "⬅";
   else dir.innerHTML = "⬆";
 }
-
 // Buttons
 function turnLeft() {
   lego.turn -= 10;
