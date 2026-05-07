@@ -28,8 +28,9 @@ public class LegoService {
 	public String getLego() {
 		return "Lego service Legorest2!";
 	}
+
 	
-	
+
 	@Path("/setvalues")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -41,7 +42,7 @@ public class LegoService {
 	    em.getTransaction().commit();		
 		return lego;
 	}
-	@SuppressWarnings("unchecked")
+	 @SuppressWarnings("unchecked")
 	@Path("/getvalues")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -52,9 +53,9 @@ public class LegoService {
 		List<Lego> list=q.getResultList();
 		em.getTransaction().commit();
 		Lego lego=list.get(0);
-		return lego.getId()+"#"+lego.getRun()+"#"+lego.getSpeed()+"#"+lego.getTurn();
-	}
-	@Path("/setvalues/{run}/{speed}/{turn}")
+		return lego.getId()+"#"+lego.getRun()+"#"+lego.getSpeed()+"#"+lego.getTurn()+"#"+lego.getVari()+"#"+lego.getSyvyys()+"#"+lego.getDistanceForward();
+	} 
+	@Path("/setvalues/{run}/{speed}/{turn}/{vari}/{syvyys}/{distanceForward}")
 
     @GET
 
@@ -62,7 +63,7 @@ public class LegoService {
 
     @Produces(MediaType.APPLICATION_JSON)
 
-    public Lego setValues(@PathParam("run") int run, @PathParam("speed") int speed, @PathParam("turn") int turn) {
+    public Lego setValues(@PathParam("run") int run, @PathParam("speed") int speed, @PathParam("turn") int turn,@PathParam("vari") float vari, @PathParam("syvyys") float syvyys, @PathParam("distance") float distanceForward) {
 
         Lego lego = new Lego();
 
@@ -72,13 +73,19 @@ public class LegoService {
 
         lego.setTurn(turn);
 
-        // EntityManager em=emf.createEntityManager();
+		lego.setVari(vari);
 
-        // em.getTransaction().begin();
+		lego.setSyvyys(syvyys);
 
-        // em.persist(lego);
+		lego.setDistanceForward(distanceForward);
 
-        // em.getTransaction().commit();       
+        EntityManager em=emf.createEntityManager();
+
+        em.getTransaction().begin();
+
+        em.persist(lego);
+
+        em.getTransaction().commit();
 
         return lego;
 
