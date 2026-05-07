@@ -18,6 +18,9 @@ public class Lego {
 	private int speed;
 	private int turn;
 	private Timestamp aika=new Timestamp(System.currentTimeMillis());
+	private float vari;
+	private float syvyys;
+	private float distanceForward;
 
 	public int getId() {
 		return id;
@@ -50,4 +53,28 @@ public class Lego {
 	public void setAika(Timestamp aika) {
 		this.aika = aika;
 	}
+
+	public float getVari(){
+		return vari;
+	}
+
+	public void setVari(float vari){
+		this.vari = vari;
+	}
+	public float getSyvyys(){
+		return syvyys;
+	}
+
+	public void setSyvyys(float syvyys){
+		this.syvyys = syvyys;
+	}
+
+	public float getDistanceForward(){
+		return distanceForward;
+	}
+
+	public void setDistanceForward(float distanceForward){
+		this.distanceForward = distanceForward;
+	}
+
 }
